@@ -1,5 +1,6 @@
 using Bliar.Areas.Identity;
 using Bliar.Data;
+using Bliar.Hubs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -71,6 +72,7 @@ namespace Bliar
                 endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
+                endpoints.MapHub<BlazorChatSampleHub>(BlazorChatSampleHub.HubUrl);
             });
         }
     }
