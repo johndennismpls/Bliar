@@ -5,14 +5,12 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Bliar.Hubs
 {
-        
-    public class BlazorChatSampleHub : Hub
+    public class PlayHub : Hub
     {
-        public const string HubUrl = "/chat";
+        public const string HubUrl = "/play";
 
         public async Task Broadcast(string username, string message)
         {
-            var name = Context.User.Identity.Name;
             await Clients.All.SendAsync("Broadcast", username, message);
         }
 
