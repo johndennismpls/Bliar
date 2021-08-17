@@ -35,9 +35,13 @@ namespace Bliar
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+
+            services
+                .AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
             services.AddRazorPages();
+            services.AddHttpClient();
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
@@ -65,6 +69,7 @@ namespace Bliar
             app.UseRouting();
 
             app.UseAuthentication();
+            //app.UseCookiePolicy();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

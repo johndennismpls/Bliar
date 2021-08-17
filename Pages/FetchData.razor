@@ -1,6 +1,9 @@
 ﻿@page "/fetchdata"
 
 @using Bliar.Data
+@using System.Net.Http.Json
+
+@inject IHttpClientFactory ClientFactory
 @inject WeatherForecastService ForecastService
 
 <h1>Weather forecast</h1>
@@ -41,6 +44,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        //var client = ClientFactory.CreateClient();
+        //forecasts = await client.GetFromJsonAsync<WeatherForecast[]>(@"https://localhost:44329/weather");
+
         forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
     }
 }
