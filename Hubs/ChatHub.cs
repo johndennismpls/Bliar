@@ -27,6 +27,7 @@ namespace Bliar.Hubs
 
         public override Task OnConnectedAsync()
         {
+            var x = Context.User.Identity.Name;
             Console.WriteLine($"{Context.ConnectionId} connected");
             return base.OnConnectedAsync();
         }
