@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace Bliar.Hubs
 {
 
+    [Authorize]
     public class BlazorChatSampleHub : Hub
     {
         public const string HubUrl = "/chat";
@@ -19,7 +20,9 @@ namespace Bliar.Hubs
 
         public async Task Broadcast(string username, string message)
         {
-            await Clients.All.SendAsync("Broadcast", username, message);
+            var x = Context.User.Identity.Name;
+            //var wat = Clients.User();
+            await Clients.All.SendAsync("Broadcast", x, message);
         }
 
         public override Task OnConnectedAsync()

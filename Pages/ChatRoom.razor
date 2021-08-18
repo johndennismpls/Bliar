@@ -1,7 +1,9 @@
 ﻿@page "/chatroom"
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
-
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@*@inject Blazor.Extensions.Storage.LocalStorage localStorage;*@
+@using System.Net
 @attribute [Authorize]
 @using Microsoft.AspNetCore.SignalR.Client;
 @using Bliar.Hubs;
@@ -78,6 +80,9 @@ else
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
 
+    [Inject]
+    public CookiesProvider CookiesProvider { get; set; }
+
 
     public async Task Chat()
     {
@@ -102,13 +107,50 @@ else
 
             _hubUrl = baseUrl.TrimEnd('/') + BlazorChatSampleHub.HubUrl;
 
-            //_hubConnection = new HubConnectionBuilder()
-            //    .WithUrl(_hubUrl)
-            //    .Build();
-            _hubConnection = new HubConnectionBuilder()
-                .WithUrl(_hubUrl)
-                .Build();
 
+
+            var authState = await authenticationStateTask;
+            var user = authState.User;
+
+
+
+
+            _hubConnection = new HubConnectionBuilder()
+            .WithUrl(_hubUrl)
+            .Build();
+
+            //var connection = new HubConnectionBuilder()
+            //    .WithUrl("https://example.com/chathub", options =>
+            //    {
+            //        //options.AccessTokenProvider = () => Task.FromResult(_myAccessToken);
+            //    })
+            //    .Build();
+
+            //localStorage.GetItem(".AspNetCore.Identity.Application");
+            await localStorage.SetItemAsync("name", "John Smith");
+            var name = await localStorage.GetItemAsync<string>("name");
+
+
+            //var asqd = await localStorage.LengthAsync();
+            //var c1 = await localStorage.GetItemAsStringAsync(".AspNetCore.Identity.Application");
+            //var cookie = await localStorage.GetItemAsync<string>(".AspNetCore.Identity.Application");
+            //var c2 = new System.Net.Cookie(".AspNetCore.Identity.Application", "CfDJ8MpVAyN4rr1Gk3YmsDowUFRNYN7C-uM5apfNbCpRvAOWsM9uGGyKbWiaW7AgPoetMyzh2BnMFe4u6QaSFJsGZiyjxpor1_FAZ8_tsAhf0Y3Qco6x7Ewv8XUGWv15L_BBHbkkmGbV6VW38BwNVl2EY2cXaJFG6IT0PmdY1Prmpv7-fLDFZmWf7vWEEnU-CNbsWQkguLXoTCa5_SNWBL7etavmSK5cP7s201DDf156BjzUflhdDKZdE9IDgxJKTKATSAezcFVZ6QHp8atTt3w1P-tQBfsZmIlp6ADPAz0UkzFcP4DMB8G-05aKNUs-WMUs_pvi8mDzrALW6pqBbvvuvNDT32uk43ClDVVrKIFjslNGnNYsR_JL3wUytB9U1RCgqeodF6TeQb1DAh5JkQ_AZ-aYoQ1vv2lP4PVqPigAjSl0mJL9fCrmJ-gKi-ag1MFLUJTMjf8L17ErJO7qOgQfOg96WLU5i1tttqBJtVUgCJhaxuZUvz9v85K0xfcUoicjT9I9MzLVGYwvQ36nhgEi32de8tGhHV3ervWiCMlWoKk6fhKyLXtgBcK0Ro3AhO07zZbQ8AtBr2q4fm58iULULaiuMtpot5nKEBWdui5YNugIQKMY-ZDuOoY7kTU7ENdjKu5ifniHv7GNlciSgAiwGQxBG7xno_7VSmNdMj2QvlUv7mU24Ofs7HOJfEdd9Ygn8tLhL7IkhZGpVlvMWccQBVdBSnvJ0CkTswkrtNPmCFEZ")
+            //{
+            //    Domain = "localhost"
+            //};
+            var container = new CookieContainer();
+            var cookie = new Cookie()
+            {
+                Name = ".AspNetCore.Identity.Application",
+                Domain = "localhost",
+                Value = CookiesProvider.Cookie
+            };
+
+            container.Add(cookie);
+
+            _hubConnection = new HubConnectionBuilder()
+            .WithUrl(_hubUrl, options => { options.Cookies = container; })
+            .Build();
             _hubConnection.On<string, string>("Broadcast", BroadcastMessage);
 
             await _hubConnection.StartAsync();
