@@ -1,6 +1,7 @@
 using Blazored.LocalStorage;
 using Bliar.Areas.Identity;
 using Bliar.Data;
+using Bliar.Data.Models;
 using Bliar.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -48,10 +49,14 @@ namespace Bliar
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                  .AddDefaultTokenProviders();
 
+            services.AddDbContext<BliarContext>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddRazorPages();
             services.AddHttpClient();
             services.AddServerSideBlazor();
 
+            services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();

@@ -21,7 +21,6 @@ namespace Bliar.Hubs
         public async Task Broadcast(string username, string message)
         {
             var x = Context.User.Identity.Name;
-            //var wat = Clients.User();
             await Clients.All.SendAsync("Broadcast", x, message);
         }
 
